@@ -3,6 +3,5 @@
     public interface ILoginUserManager
     {
         int GetLoginUserId();
-        string GetLoginUserTenant();
     }
 }

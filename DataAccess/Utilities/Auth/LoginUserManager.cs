@@ -19,14 +19,5 @@ namespace DataAccess.Utilities.Auth
             else
                 return 0;
         }
-
-        public string GetLoginUserTenant()
-        {
-            var tenant = _httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(x => x.Type == "Tenant")?.Value;
-            if (tenant != null)
-                return tenant;
-            else
-                return string.Empty;
-        }
     }
 }

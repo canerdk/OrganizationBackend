@@ -17,7 +17,6 @@ namespace DataAccess.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
             base.OnModelCreating(modelBuilder);
         }
 
@@ -32,7 +31,6 @@ namespace DataAccess.Context
                             entry.Entity.CreatedDate = DateTime.Now;
                             entry.Entity.IsDeleted = false;
                             entry.Entity.CreatedUserId = _loginUser.GetLoginUserId();
-                            entry.Entity.TenantId = _loginUser.GetLoginUserTenant();
                             break;
                         }
                     case EntityState.Modified:
@@ -45,6 +43,16 @@ namespace DataAccess.Context
             }
             return base.SaveChangesAsync(cancellationToken);
         }
+
+        public DbSet<Contract> Contracts { get; set; }
+        public DbSet<Event> Events { get; set; }
+        public DbSet<Organization> Organizations { get; set; }
+        public DbSet<Participant> Participants { get; set; }
+        public DbSet<Survey> Surveys { get; set; }
+        public DbSet<SurveyQuestion> SurveyQuestions { get; set; }
+        public DbSet<SurveyResponse> SurveyResponses { get; set; }
+        public DbSet<SurveyResponseAnswer> SurveyResponseAnswers { get; set; }
+        public DbSet<UserContract> UserContracts { get; set; }
 
     }
 }

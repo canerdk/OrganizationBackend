@@ -8,6 +8,5 @@
         public DateTime? ModifiedDate { get; set; }
         public DateTime? DeletedDate { get; set; }
         public int? CreatedUserId { get; set; }
-        public string? TenantId { get; set; }
     }
 }

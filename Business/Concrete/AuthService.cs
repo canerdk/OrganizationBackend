@@ -3,14 +3,9 @@ using Business.Abstract;
 using Business.Utilities.Results;
 using Business.Utilities.Security.JWT;
 using DataAccess.Utilities.Auth;
-using Entities.Common;
 using Entities.Dtos.Auth;
 using Entities.Entities;
-using Entities.Enums;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Win32;
-using System.Security.Claims;
 
 namespace Business.Concrete
 {
@@ -19,15 +14,13 @@ namespace Business.Concrete
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<AppRole> _roleManager;
         private readonly IJwtManager _jwtManager;
-        private readonly ILoginUserManager _loginUserManager;
         private readonly IMapper _mapper;
 
-        public AuthService(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager, IJwtManager jwtManager, ILoginUserManager loginUserManager, IMapper mapper)
+        public AuthService(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager, IJwtManager jwtManager, IMapper mapper)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _jwtManager = jwtManager;
-            _loginUserManager = loginUserManager;
             _mapper = mapper;
         }
 
@@ -44,10 +37,8 @@ namespace Business.Concrete
                     Email = user.Email,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    TenantId = user.TenantId,
                     UserName = user.UserName,
-                    Roles = userRoles.ToList(),
-                    IsMain = user.IsMain
+                    Roles = userRoles.ToList()
                 };
 
                 string accessToken = _jwtManager.GenerateJwtToken(userDto);
@@ -77,35 +68,9 @@ namespace Business.Concrete
                 FirstName = register.FirstName,
                 LastName = register.LastName,
                 PhoneNumber = register.Phone,
-                TenantId = register.TenantId,
                 EmailConfirmed = false,
                 TwoFactorEnabled = false,
-                LockoutEnabled = false,
-                IsMain = true
-            };
-
-            var result = await _userManager.CreateAsync(appUser, register.Password);
-            if (result.Succeeded)
-                return new SuccessResult();
-            else
-                return new ErrorResult(result.Errors.Select(x => x.Description));
-        }
-
-        public async Task<IResult> RegisterBranchUser(RegisterBranchUserDto register)
-        {
-            var appUser = new AppUser()
-            {
-                UserName = register.UserName,
-                Email = register.Email,
-                FirstName = register.FirstName,
-                LastName = register.LastName,
-                PhoneNumber = register.Phone,
-                TenantId = _loginUserManager.GetLoginUserTenant(),
-                EmailConfirmed = false,
-                TwoFactorEnabled = false,
-                LockoutEnabled = false,
-                IsMain = false,
-                ParentId = _loginUserManager.GetLoginUserId()
+                LockoutEnabled = false
             };
 
             var result = await _userManager.CreateAsync(appUser, register.Password);
@@ -135,10 +100,8 @@ namespace Business.Concrete
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                TenantId = user.TenantId,
                 UserName = user.UserName,
-                Roles = userRoles.ToList(),
-                IsMain = user.IsMain
+                Roles = userRoles.ToList()
             };
 
             var newAccessToken = _jwtManager.GenerateJwtToken(userDto);
@@ -215,127 +178,6 @@ namespace Business.Concrete
             }
 
             return new ErrorResult("User not found");
-        }
-
-        public async Task<IResult> AssignReportClaims(UserReportClaimDto dto)
-        {
-            var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
-            if (user != null)
-            {
-                var claims = await _userManager.GetClaimsAsync(user);
-                var existClaim = claims.FirstOrDefault(x => x.Type == dto.ReportType.ToString());
-                if (existClaim != null)
-                {
-                    var ids = string.Join(",", dto.ReportIds);
-                    var newClaim = new Claim(dto.ReportType.ToString(), ids);
-                    var result = await _userManager.ReplaceClaimAsync(user, existClaim, newClaim);
-                    if (result.Succeeded)
-                        return new SuccessResult("Claims updated");
-                    else
-                        return new ErrorResult(result.Errors);
-                }
-                else
-                {
-                    var ids = string.Join(",", dto.ReportIds);
-                    var claim = new Claim(dto.ReportType.ToString(), ids);
-                    var result = await _userManager.AddClaimAsync(user, claim);
-                    if (result.Succeeded)
-                        return new SuccessResult("Claims added");
-                    else
-                        return new ErrorResult(result.Errors);
-                }
-            }
-
-            return new ErrorResult("User not found");
-        }
-
-        public async Task<IDataResult<List<int>>> GetUserReportClaims(int userId, ReportType reportType)
-        {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user != null)
-            {
-                var result = await _userManager.GetClaimsAsync(user);
-                if (result != null)
-                {
-                    var claim = result?.FirstOrDefault(x => x.Type == reportType.ToString())?.Value;
-                    if (!string.IsNullOrEmpty(claim))
-                    {
-                        var reportIds = claim.Split(",").Select(id => int.Parse(id)).ToList();
-                        return new SuccessDataResult<List<int>>(reportIds);
-                    }
-                }
-            }
-
-            return new ErrorDataResult<List<int>>();
-        }
-
-        public async Task<IDataResult<IEnumerable<UserReportClaimDto>>> GetAllUserReportClaims(int userId)
-        {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user != null)
-            {
-                var result = await _userManager.GetClaimsAsync(user);
-                if (result != null)
-                {
-                    List<UserReportClaimDto> claims = new List<UserReportClaimDto>();
-                    foreach (var item in result)
-                    {
-                        if (Enum.TryParse(item.Type, out ReportType reportType))
-                        {
-                            claims.Add(new UserReportClaimDto()
-                            {
-                                UserId = userId,
-                                ReportType = reportType,
-                                ReportIds = item.Value.Split(",").Select(id => int.Parse(id)).ToList()
-                            });
-                        }
-                    }
-                    return new SuccessDataResult<IEnumerable<UserReportClaimDto>>(claims);
-                }
-            }
-
-            return new ErrorDataResult<IEnumerable<UserReportClaimDto>>();
-        }
-
-        public async Task<IDataResult<IEnumerable<ClaimDto>>> GetAllClaim()
-        {
-            var users = await _userManager.Users.Where(x => x.TenantId == _loginUserManager.GetLoginUserTenant()).ToListAsync();
-            if (users != null)
-            {
-                List<ClaimDto> userClaims = new List<ClaimDto>();
-                foreach (var user in users)
-                {
-                    var claims = await _userManager.GetClaimsAsync(user);
-                    if (claims != null)
-                    {
-                        foreach (var claim in claims)
-                        {
-                            userClaims.Add(new ClaimDto()
-                            {
-                                UserId = user.Id,
-                                Type = claim.Type,
-                                Value = claim.Value,
-                                Email = user.Email,
-                                UserName = user.UserName
-                            });
-                        }
-                    }
-                }
-                return new SuccessDataResult<IEnumerable<ClaimDto>>(userClaims);
-
-            }
-
-            return new ErrorDataResult<IEnumerable<ClaimDto>>();
-        }
-
-        public async Task<IDataResult<IEnumerable<UserDto>>> GetAllUser()
-        {
-            var users = await _userManager.Users.Where(x => x.TenantId == _loginUserManager.GetLoginUserTenant()).ToListAsync();
-
-            if (users != null)
-                return new SuccessDataResult<IEnumerable<UserDto>>(_mapper.Map<List<UserDto>>(users));
-
-            return new ErrorDataResult<IEnumerable<UserDto>>();
         }
 
         public async Task<IResult> ChangePassword(ChangePasswordDto dto)
