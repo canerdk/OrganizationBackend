@@ -8,7 +8,7 @@ namespace Entities.Entities
         public DateTime Date { get; set; }
         public int UserId { get; set; }
         public int ContractId { get; set; }
-        public required AppUser User { get; set; }
-        public required Contract Contract { get; set; }
+        public AppUser User { get; set; }
+        public Contract Contract { get; set; }
     }
 }

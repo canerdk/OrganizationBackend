@@ -1,4 +1,6 @@
-﻿using DataAccess.Context;
+﻿using DataAccess.Abstract;
+using DataAccess.Concrete;
+using DataAccess.Context;
 using DataAccess.Utilities.Auth;
 using Entities.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -20,7 +22,12 @@ namespace DataAccess
             services.AddIdentity<AppUser, AppRole>().AddDefaultTokenProviders().AddEntityFrameworkStores<AppDbContext>();
 
 
-            services.AddTransient<ILoginUserManager, LoginUserManager>();
+            services.AddScoped<ILoginUserManager, LoginUserManager>();
+            services.AddScoped<IContractDAL, ContractDAL>();
+            services.AddScoped<IEventDAL, EventDAL>();
+            services.AddScoped<IOrganizationDAL, OrganizationDAL>();
+            services.AddScoped<IParticipantDAL, ParticipantDAL>();
+            services.AddScoped<IUserContractDAL, UserContractDAL>();
 
             using (var serviceProvider = services.BuildServiceProvider())
             {

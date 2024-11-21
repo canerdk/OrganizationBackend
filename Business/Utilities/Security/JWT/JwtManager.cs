@@ -26,11 +26,9 @@ namespace Business.Utilities.Security.JWT
             var claims = new List<Claim>
             {
                 new Claim("UserId", user.Id.ToString()),
-                new Claim("Tenant", user.TenantId),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Name, user.FirstName),
-                new Claim(ClaimTypes.Surname, user.LastName),
-                new Claim("IsMain", user.IsMain.ToString())
+                new Claim(ClaimTypes.Surname, user.LastName)
             };
 
             if (user.Roles.Any())
