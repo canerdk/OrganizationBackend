@@ -21,7 +21,6 @@ namespace DataAccess
 
             services.AddIdentity<AppUser, AppRole>().AddDefaultTokenProviders().AddEntityFrameworkStores<AppDbContext>();
 
-
             services.AddScoped<ILoginUserManager, LoginUserManager>();
             services.AddScoped<IContractDAL, ContractDAL>();
             services.AddScoped<IEventDAL, EventDAL>();
@@ -34,6 +33,7 @@ namespace DataAccess
                 var dbContext = serviceProvider.GetRequiredService<AppDbContext>();
                 dbContext.Database.Migrate();
             }
+
             //var assembly = Assembly.GetExecutingAssembly();
             //var serviceType = typeof(IScoped);
             //var types = assembly.GetTypes().Where(t => serviceType.IsAssignableFrom(t) && t.IsClass && !t.IsAbstract);
