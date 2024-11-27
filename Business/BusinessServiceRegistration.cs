@@ -19,8 +19,13 @@ namespace Business
             services.AddAutoMapper(assembly);
             services.AddHttpContextAccessor();
 
-            services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IJwtManager, JwtManager>();      
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IContractService, ContractService>();
+            services.AddScoped<IEventService, EventService>();
+            services.AddScoped<IOrganizationService, OrganizationService>();
+            services.AddScoped<IParticipantService, ParticipantService>();
+            services.AddScoped<IUserContractService, UserContractService>();
 
             services.AddMemoryCache();
 
