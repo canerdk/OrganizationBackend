@@ -22,6 +22,7 @@ namespace Business.Mapping
             CreateMap<Organization, OrganizationDto>().ReverseMap();
             CreateMap<Participant, ParticipantDto>().ReverseMap();
             CreateMap<UserContract, UserContractDto>().ReverseMap();
+            CreateMap<UserContract, UserContractDetailDto>().ReverseMap();
         }
     }
 }

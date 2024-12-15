@@ -38,6 +38,16 @@ namespace WebApi.Controllers
             return NotFound(result);
         }
 
+        [HttpGet("GetBySessionId/{guid}")]
+        public async Task<IActionResult> GetBySessionId(Guid guid)
+        {
+            var result = await _userContractService.GetBySessionId(guid);
+            if (result.Success)
+                return Ok(result);
+
+            return NotFound(result);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] UserContractDto dto)
         {
