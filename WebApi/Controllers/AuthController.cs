@@ -34,5 +34,15 @@ namespace WebApi.Controllers
 
             return BadRequest(result);
         }
+
+        [HttpPost("Refresh")]
+        public async Task<IActionResult> Refresh([FromBody] TokenDto dto)
+        {
+            var result = await _authService.Refresh(dto);
+            if (result.Success)
+                return Ok(result);
+
+            return BadRequest(result);
+        }
     }
 }

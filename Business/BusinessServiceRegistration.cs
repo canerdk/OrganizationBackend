@@ -26,6 +26,7 @@ namespace Business
             services.AddScoped<IOrganizationService, OrganizationService>();
             services.AddScoped<IParticipantService, ParticipantService>();
             services.AddScoped<IUserContractService, UserContractService>();
+            services.AddScoped<ISingerService, SingerService>();
 
             services.AddMemoryCache();
 

@@ -70,7 +70,8 @@ namespace Business.Concrete
                 PhoneNumber = register.Phone,
                 EmailConfirmed = false,
                 TwoFactorEnabled = false,
-                LockoutEnabled = false
+                LockoutEnabled = false,
+                Type = register.Type
             };
 
             var result = await _userManager.CreateAsync(appUser, register.Password);
