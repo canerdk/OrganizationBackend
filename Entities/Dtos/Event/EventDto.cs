@@ -1,4 +1,5 @@
 ﻿using Entities.Common;
+using Entities.Dtos.Participant;
 
 namespace Entities.Dtos.Event
 {
@@ -10,5 +11,6 @@ namespace Entities.Dtos.Event
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int OrganizationId { get; set; }
+        public List<ParticipantDto>? Participants { get; set; }
     }
 }

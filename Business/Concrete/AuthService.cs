@@ -52,7 +52,8 @@ namespace Business.Concrete
                 return new SuccessDataResult<TokenDto>(new TokenDto()
                 {
                     AccessToken = accessToken,
-                    RefreshToken = refreshToken
+                    RefreshToken = refreshToken,
+                    UserId = user.Id
                 });
             }
 
@@ -116,7 +117,8 @@ namespace Business.Concrete
             return new SuccessDataResult<TokenDto>(new TokenDto()
             {
                 AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken
+                RefreshToken = newRefreshToken,
+                UserId = user.Id
             });
         }
 

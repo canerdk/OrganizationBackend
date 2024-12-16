@@ -4,6 +4,7 @@ using Business.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Dtos.Event;
 using Entities.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Business.Concrete
 {
@@ -50,7 +51,7 @@ namespace Business.Concrete
 
         public async Task<IDataResult<EventDto>> GetById(int id)
         {
-            var result = await _eventDAL.GetAsync(x => x.Id == id && !x.IsDeleted);
+            var result = await _eventDAL.GetAsync(x => x.Id == id && !x.IsDeleted, include: i => i.Include(x => x.Participants));
 
             if (result != null)
                 return new SuccessDataResult<EventDto>(_mapper.Map<EventDto>(result));
@@ -60,7 +61,7 @@ namespace Business.Concrete
 
         public async Task<IDataResult<EventDto>> Update(EventDto dto)
         {
-            var exist = await _eventDAL.GetAsync(x => x.Id == dto.Id && !x.IsDeleted);
+            var exist = await _eventDAL.GetAsync(x => x.Id == dto.Id && !x.IsDeleted, include: i => i.Include(x => x.Participants));
 
             if (exist != null)
             {

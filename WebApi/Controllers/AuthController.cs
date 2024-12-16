@@ -44,5 +44,15 @@ namespace WebApi.Controllers
 
             return BadRequest(result);
         }
+
+        [HttpGet("GetById/{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var result = await _authService.GetUserById(id);
+            if (result.Success)
+                return Ok(result);
+
+            return NotFound(result);
+        }
     }
 }
