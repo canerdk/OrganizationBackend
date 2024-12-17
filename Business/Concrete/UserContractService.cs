@@ -63,7 +63,7 @@ namespace Business.Concrete
 
         public async Task<IDataResult<UserContractDetailDto>> GetBySessionId(Guid guid)
         {
-            var result = await _userContractDAL.GetAsync(x => x.SessionId == guid && !x.IsDeleted, include: i => i.Include(x => x.Contract).Include(x => x.Event));
+            var result = await _userContractDAL.GetAsync(x => x.SessionId == guid && !x.IsDeleted, include: i => i.Include(x => x.Contract).Include(x => x.Event).Include(x => x.User));
 
             if (result != null)
                 return new SuccessDataResult<UserContractDetailDto>(_mapper.Map<UserContractDetailDto>(result));
